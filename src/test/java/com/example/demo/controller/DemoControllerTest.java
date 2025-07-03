@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -30,4 +31,25 @@ class DemoControllerTest {
     private MockMvc mockMvc;
 
     // add your test cases here
+    @Test
+    void testRemove_withValidInput_shouldReturnModifiedString() throws Exception {
+        mockMvc.perform(get("/remove")
+                        .param("input", "eloquent"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("loquen"));
+    }
+
+    @Test
+    void testRemove_withEncodedSpecialCharacters_shouldReturnExpected() throws Exception {
+        mockMvc.perform(get("/remove")
+                        .param("input", "123%qwerty+"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("23%qwerty"));
+    }
+
+    @Test
+    void testRemove_withShortInput_shouldReturnBadRequest() throws Exception {
+        mockMvc.perform(get("/remove").param("input", "a"))
+                .andExpect(status().isBadRequest());
+    }
 }
